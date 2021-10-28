@@ -1,11 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
+require("dotenv").config();
 
 const Schema = mongoose.Schema;
 const app = express();
-const port = 3111;
-const mongodbURL =
-  "mongodb+srv://<USERNAME>:<PASSWORD>@<MONGODB CLOUD URL>/myFirstDatabase?retryWrites=true&w=majority";
+const port = process.env.PORT || 3111;
+const mongodbURL = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_URL}/myFirstDatabase?retryWrites=true&w=majority`;
 
 mongoose.connect(mongodbURL, {
   useNewUrlParser: true,
@@ -32,7 +32,9 @@ const Expense = mongoose.model("expenses", ExpenseTracker);
     throw err;
   }); */
 
-Expense.find().then((expenses) => console.log(expenses.length));
+const listOfExpenses = Expense.find().then((expenses) =>
+  console.log(expenses.length)
+);
 
 /* app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -81,7 +83,11 @@ Expense.find().then((expenses) => console.log(expenses.length));
       .then(data => console.log(data)); */
 
 app.get("/", (req, res) => {
-  res.send("Hello, Welcome to the Express starter template for Stackblitz!");
+  res.send({
+    code: 1,
+    message: "Hello, Welcome to the Express starter template!",
+    data: listOfExpenses,
+  });
 });
 
 app.post("/saveExpense", (req, res) => {
