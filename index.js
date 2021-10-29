@@ -85,7 +85,7 @@ const listOfExpenses = Expense.find().then((expenses) =>
 app.get("/", (req, res) => {
   res.send({
     code: 1,
-    message: "Hello, Welcome to the Express starter template!",
+    message: "Hello, Welcome to the Expense Tracker App Backend!",
     data: listOfExpenses,
   });
 });
