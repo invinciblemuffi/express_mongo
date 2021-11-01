@@ -49,13 +49,17 @@ Expense.find().then((expenses) => console.log(expenses.length));
 app.options("*", cors());
 
 app.get("/", cors(), async (req, res) => {
-  listOfExpenses = await Expense.find();
-  res.send({
-    code: 1,
-    message: "Hello, Welcome to the Expense Tracker App Backend!",
-    expDataLength: listOfExpenses.length,
-    expData: listOfExpenses,
-  });
+  try {
+    listOfExpenses = await Expense.find();
+    res.send({
+      code: 1,
+      message: "Hello, Welcome to the Expense Tracker App Backend!",
+      expDataLength: listOfExpenses.length,
+      expData: listOfExpenses,
+    });
+  } catch (error) {
+    res.send({ code: 0, message: err.message });
+  }
 });
 
 app.post("/saveExpense", cors(), (req, res) => {
