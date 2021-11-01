@@ -35,7 +35,9 @@ const Expense = mongoose.model("expenses", ExpenseTracker);
     throw err;
   }); */
 
-Expense.find().then((expenses) => console.log(expenses.length));
+Expense.find()
+  .then((expenses) => console.log(expenses.length))
+  .catch((err) => console.log(err.message));
 
 /* app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
