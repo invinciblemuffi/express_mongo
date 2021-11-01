@@ -1,11 +1,14 @@
 const express = require("express");
 const mongoose = require("mongoose");
+var cors = require("cors");
 require("dotenv").config();
 
 const Schema = mongoose.Schema;
 const app = express();
 const port = process.env.PORT || 3111;
 const mongodbURL = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_URL}/myFirstDatabase?retryWrites=true&w=majority`;
+
+let listOfExpenses = [];
 
 mongoose.connect(mongodbURL, {
   useNewUrlParser: true,
@@ -32,9 +35,7 @@ const Expense = mongoose.model("expenses", ExpenseTracker);
     throw err;
   }); */
 
-const listOfExpenses = Expense.find().then((expenses) =>
-  console.log(expenses.length)
-);
+Expense.find().then((expenses) => console.log(expenses.length));
 
 /* app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -45,76 +46,47 @@ const listOfExpenses = Expense.find().then((expenses) =>
   next();
 }); */
 
-/* headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json"
-    }, */
+app.options("*", cors());
 
-/* fetch("http://localhost:3111/")
-      .then(response => console.log(response.text()));
-      .then(data => console.log(data)); */
-
-/* fetch("http://localhost:3111/saveExpense", {
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json"
-    },
-    method:'POST',
-    body: JSON.stringify({ expName: "Phone Repair", expAmt: 10000, expDate: new Date(2021, 12, 12) })
-    })
-      .then(response => console.log(response.text());
-      .then(data => console.log(data)); */
-
-/* fetch(`http://localhost:3111/editExpense/61404b71ab3d453808ffe2fc`, {
-    method:'PUT',
-    headers: {
-      "Content-Type": "application/json",
-      "Accept": "application/json"
-    },
-       body: JSON.stringify({ expName: "TV Repair" })
-    })
-     .then(response => console.log(response.text());
-      .then(data => console.log(data)); */
-
-/* fetch(`http://localhost:3111/deleteExpense/61404c5e4af34cb18902e0aa`, {
-    method:'DELETE',
-    })
-      .then(response => console.log(response.text());
-      .then(data => console.log(data)); */
-
-app.get("/", (req, res) => {
+app.get("/", cors(), async (req, res) => {
+  listOfExpenses = await Expense.find();
   res.send({
     code: 1,
     message: "Hello, Welcome to the Expense Tracker App Backend!",
-    data: listOfExpenses,
+    expDataLength: listOfExpenses.length,
+    expData: listOfExpenses,
   });
 });
 
-app.post("/saveExpense", (req, res) => {
+app.post("/saveExpense", cors(), (req, res) => {
   console.log("req.body==>", req.body);
   Expense(req.body)
     .save()
-    .then(() => console.log("New Expense Saved"));
+    .then(() => console.log("New Expense Saved"))
+    .then(res.send({ code: 1, message: "New expense saved successfully" }))
+    .catch((err) => res.send({ code: 0, message: err.message }));
 });
 
-app.put("/editExpense/:expId", async (req, res) => {
+app.put("/editExpense/:expId", cors(), async (req, res) => {
   try {
-    const { expName } = req.body;
+    const { expName, expAmt, expDate } = req.body;
     const { expId } = req.params;
     // const expense = await Expense.findById({ _id: expId });
+    // console.log(expName, expAmt, expDate, expId);
     const expense = await Expense.findByIdAndUpdate(
       { _id: expId },
-      { expName }
+      { expName, expAmt, expDate }
     );
     // expense.expName = expName;
     await expense.save();
+    // listOfExpenses = await Expense.find();
     res.send({ code: 1, message: "updated expense successfully" });
   } catch (err) {
     res.send({ code: 0, message: err.message });
   }
 });
 
-app.delete("/deleteExpense/:expId", async (req, res) => {
+app.delete("/deleteExpense/:expId", cors(), async (req, res) => {
   try {
     const { expId } = req.params;
     await Expense.findByIdAndDelete({ _id: expId });
