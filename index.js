@@ -1,11 +1,11 @@
 const express = require("express");
 const mongoose = require("mongoose");
-var cors = require("cors");
+const cors = require("cors");
 require("dotenv").config();
 
 const Schema = mongoose.Schema;
 const app = express();
-const port = process.env.PORT || 3111;
+const port = process.env.PORT || 3111; // Process.env.PORT is to bind the node to heroku port correctly
 const mongodbURL = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_URL}/myFirstDatabase?retryWrites=true&w=majority`;
 
 let listOfExpenses = [];
