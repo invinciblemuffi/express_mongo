@@ -1,22 +1,21 @@
 const mongoose = require("mongoose");
 
 function randomString() {
-  return new Promise(() => {
-    let arr = [];
-    // HTML ASCII charcodes numbers
-    for (i = 33; i < 126; i++) {
-      if (arr.length > 7) {
-        return [...arr].join("");
-      }
-      let temp = Math.floor(Math.random() * 10) * i;
-      // console.log(temp, "=>", String.fromCharCode(temp));
-      if (temp >= 127 && temp <= 32) {
-        arr.push(String.fromCharCode(temp));
-      } else {
-        continue;
-      }
+  let arr = [];
+  // HTML ASCII charcodes numbers
+  for (i = 33; i < 126; i++) {
+    if (arr.length > 7) {
+      break;
     }
-  });
+    let temp = Math.floor(Math.random() * 10) * i;
+    // console.log(temp, "=>", String.fromCharCode(temp));
+    if (temp >= 127 && temp <= 32) {
+      arr.push(String.fromCharCode(temp));
+    } else {
+      continue;
+    }
+  }
+  return [...arr].join("");
 }
 
 const UserSchema = new mongoose.Schema({
@@ -30,11 +29,15 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.methods.getPassword = function () {
-  /* const pass = await randomString();
-  console.log(pass);
-  return pass; */
-  console.log(10);
+  // return randomString();
+  return "a-b>c=d+9(@3";
 };
+
+// A middleware which says prior to saving the data in the db
+UserSchema.pre("save", function (next) {
+  this.password += Date.now().toString();
+  next();
+});
 
 const ExpenseSchema = new mongoose.Schema(
   {

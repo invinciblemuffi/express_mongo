@@ -34,18 +34,36 @@ async function addNewUser() {
 
 // addNewUser();
 
-async function addUserWithPassword() {
+async function addUserWithPasswordMiddleware() {
   try {
-    await new User({ name: "Master" }).save();
-    // usr.password = usr.getPassword();
-    // await usr.save();
-    // const deleteCount = await User.deleteMany();
+    // await new User({ name: "Master" }).save();
+    const usr = await new User({ name: "Master1" });
+    await usr.save();
+    console.log("user", usr);
   } catch (e) {
     console.log(e.message);
   }
 }
 
-// addUserWithPassword();
+// addUserWithPasswordMiddleware();
+
+async function updatePassword() {
+  const found = await User.findOne({
+    name: "Master1",
+  });
+  found.password = found.getPassword();
+  found.save();
+  console.log(found);
+}
+
+// updatePassword()
+
+async function deleteAllUsers() {
+  const deleteCount = await User.deleteMany();
+  console.log(deleteCount);
+}
+
+// deleteAllUsers()
 
 /* new Expense({ expName: "Oiling", expAmt: 1000, expDate: new Date() })
   .save()
