@@ -2,8 +2,8 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
+const { Expense, User } = require("./Expense");
 
-const Schema = mongoose.Schema;
 const app = express();
 const port = process.env.PORT || 3111; // Process.env.PORT is to bind the node to heroku port correctly
 const mongodbURL = `mongodb+srv://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_URL}/myFirstDatabase?retryWrites=true&w=majority`;
@@ -17,27 +17,74 @@ mongoose.connect(mongodbURL, {
 
 app.use(express.json());
 
-const ExpenseTracker = new Schema(
-  {
-    expName: { type: String, required: true, default: "" },
-    expAmt: { type: Number, required: true, default: 0 },
-    expDate: { type: Date, required: true, default: new Date() },
-  },
-  { timestamps: true }
-);
+async function addNewUser() {
+  const user = await User.create({ name: "Mufaddal" });
+  console.log(user);
+}
 
-const Expense = mongoose.model("expenses", ExpenseTracker);
+// addNewUser();
 
-/* Expense({ expName: "Oiling", expAmt: 1000, expDate: new Date() })
+/* new Expense({ expName: "Oiling", expAmt: 1000, expDate: new Date() })
   .save()
   .then(() => console.log("Expense Saved"))
   .catch((err) => {
     throw err;
   }); */
 
-Expense.find()
-  .then((expenses) => console.log(expenses.length))
-  .catch((err) => console.log(err.message));
+// OR ------
+
+async function addManualExpense() {
+  try {
+    await Expense.create({
+      expName: "Tuning",
+      expAmt: 5000,
+      expDate: new Date().getTime(),
+      userName: "61d40faaa65e2283d44ebd72",
+    });
+  } catch (error) {
+    console.log(error.message);
+  }
+}
+
+// addManualExpense();
+
+function findAllExpenses() {
+  return Expense.find()
+    .then((expenses) => {
+      return {
+        expenses,
+        expenseLength: expenses.length,
+      };
+    })
+    .catch((err) => console.log(err.message));
+}
+
+/* findAllExpenses().then((d) =>
+  console.log(`My expenses = ${d.expenses} and Length = ${d.expenseLength}`)
+); */
+
+async function findExpenses() {
+  const filteredExpenses = await Expense.where("expAmt")
+    .gt(100)
+    .lt(1000)
+    .limit(2)
+    .select("expName");
+
+  console.log(`filteredExpenses=${filteredExpenses}`);
+}
+
+// findExpenses();
+
+async function populateUserInExpenses() {
+  try {
+    const skipFirstDocument = await Expense.find().skip(1).populate("userName");
+    console.log(skipFirstDocument);
+  } catch (err) {
+    console.log(err.message);
+  }
+}
+
+populateUserInExpenses();
 
 /* app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
