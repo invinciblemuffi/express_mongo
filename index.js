@@ -16,6 +16,16 @@ mongoose.connect(mongodbURL, {
 });
 
 app.use(express.json());
+app.options("*", cors());
+
+/* app.use(function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content-Type, Accept"
+  );
+  next();
+}); */
 
 async function addNewUser() {
   const user = await User.create({ name: "Mufaddal" });
@@ -23,6 +33,19 @@ async function addNewUser() {
 }
 
 // addNewUser();
+
+async function addUserWithPassword() {
+  try {
+    await new User({ name: "Master" }).save();
+    // usr.password = usr.getPassword();
+    // await usr.save();
+    // const deleteCount = await User.deleteMany();
+  } catch (e) {
+    console.log(e.message);
+  }
+}
+
+// addUserWithPassword();
 
 /* new Expense({ expName: "Oiling", expAmt: 1000, expDate: new Date() })
   .save()
@@ -75,27 +98,26 @@ async function findExpenses() {
 
 // findExpenses();
 
+async function updateExpense() {
+  const firstExpenseObj = await Expense.findOne();
+  firstExpenseObj.userName = "61d40faaa65e2283d44ebd72";
+  await firstExpenseObj.save();
+  const updatedFirstExpense = await Expense.findOne();
+  console.log(`My First expense = ${updatedFirstExpense}`);
+}
+
+// updateExpense();
+
 async function populateUserInExpenses() {
   try {
-    const skipFirstDocument = await Expense.find().skip(1).populate("userName");
+    const skipFirstDocument = await Expense.find().skip(0).populate("userName");
     console.log(skipFirstDocument);
   } catch (err) {
     console.log(err.message);
   }
 }
 
-populateUserInExpenses();
-
-/* app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Origin, X-Requested-With, Content-Type, Accept"
-  );
-  next();
-}); */
-
-app.options("*", cors());
+// populateUserInExpenses();
 
 app.get("/", cors(), async (req, res) => {
   try {
