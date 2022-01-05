@@ -1,11 +1,11 @@
 const mongoose = require("mongoose");
 
-function randomString() {
+exports.randomGenerator = async function (req, res, next) {
   let arr = [];
   // HTML ASCII charcodes numbers
   for (i = 33; i < 126; i++) {
     if (arr.length > 7) {
-      break;
+      arr = [...arr].join("");
     }
     let temp = Math.floor(Math.random() * 10) * i;
     // console.log(temp, "=>", String.fromCharCode(temp));
@@ -15,8 +15,8 @@ function randomString() {
       continue;
     }
   }
-  return [...arr].join("");
-}
+  next();
+};
 
 const UserSchema = new mongoose.Schema({
   name: {

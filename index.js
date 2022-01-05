@@ -2,7 +2,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 require("dotenv").config();
-const { Expense, User } = require("./Expense");
+const { Expense, User, randomGenerator } = require("./Expense");
 
 const app = express();
 const port = process.env.PORT || 3111; // Process.env.PORT is to bind the node to heroku port correctly
@@ -137,10 +137,12 @@ async function populateUserInExpenses() {
 
 // populateUserInExpenses();
 
-app.get("/", cors(), async (req, res) => {
+app.get("/", cors(), randomGenerator, async (req, res) => {
   try {
+    console.log(res.locals.randomPass);
     listOfExpenses = await Expense.find();
     res.send({
+      rq: res.locals.randomPass,
       code: 1,
       message: "Hello, Welcome to the Expense Tracker App Backend!",
       expDataLength: listOfExpenses.length,
