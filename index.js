@@ -180,6 +180,10 @@ app.delete("/deleteExpense/:expId", cors(), async (req, res) => {
   }
 });
 
+app.use((_req, res, _next) => {
+  res.status(404).send("<h1>Page not Found!</h1>");
+});
+
 app.listen(port, () => {
   console.log(`App is live at http://localhost:${port}`);
 });

@@ -5,7 +5,7 @@ const { Expense } = require("../Expense");
 
 const router = express.Router();
 
-router.get("/", cors(), async (req, res) => {
+router.get("/", cors(), async (_req, res) => {
   try {
     listOfExpenses = await Expense.find();
     res.send({
