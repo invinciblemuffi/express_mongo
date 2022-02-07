@@ -68,12 +68,16 @@ async function deleteAllUsers() {
 
 // deleteAllUsers()
 
-/* new Expense({ expName: "Oiling", expAmt: 1000, expDate: new Date() })
-  .save()
-  .then(() => console.log("Expense Saved"))
-  .catch((err) => {
-    throw err;
-  }); */
+function addExpPromise(payload) {
+  new Expense(payload)
+    .save()
+    .then(() => console.log("Expense Saved"))
+    .catch((err) => {
+      throw err;
+    });
+}
+const expObj = { expName: "Oiling", expAmt: 1000, expDate: new Date() };
+// addExpPromise(expObj);
 
 // OR ------
 
